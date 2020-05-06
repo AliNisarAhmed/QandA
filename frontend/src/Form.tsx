@@ -19,7 +19,7 @@ export const FormContext = createContext<FormContextProps>({
   touched: {},
 });
 
-type Validator = (value: any, args?: any) => string;
+type Validator = (value: any, ...args: any) => string;
 
 export const required: Validator = (value: any): string =>
   value === undefined || value === null || value.trim() === ''
@@ -30,6 +30,15 @@ export const minLength: Validator = (value: any, length: number): string =>
   value && value.length < length
     ? `This must be at least ${length} characters`
     : '';
+
+export const betweenTwoNumbers: Validator = (
+  value: any,
+  init: number,
+  end: number,
+) =>
+  value <= end && value >= init
+    ? ''
+    : `The value must be between ${init} and ${end}`;
 
 export interface Values {
   [key: string]: any;

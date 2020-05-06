@@ -8,7 +8,7 @@ import { FormContext } from './Form';
 interface IProps {
   name: string;
   label?: string;
-  type?: 'Text' | 'TextArea' | 'Password';
+  type?: 'Text' | 'TextArea' | 'Password' | 'Number';
 }
 
 const baseCSS = css`
@@ -81,7 +81,7 @@ export const Field: FC<IProps> = ({ name, label, type = 'Text' }) => {
           {label}
         </label>
       )}
-      {(type === 'Text' ?? type === 'Password') && (
+      {(type === 'Text' || type === 'Password') && (
         <input
           type={type.toLowerCase()}
           id={name}
@@ -99,6 +99,15 @@ export const Field: FC<IProps> = ({ name, label, type = 'Text' }) => {
             height: 100px;
           `}
           value={values[name] ?? ''}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+      )}
+      {type === 'Number' && (
+        <input
+          type={type.toLowerCase()}
+          value={values[name] ?? ''}
+          css={baseCSS}
           onChange={handleChange}
           onBlur={handleBlur}
         />
