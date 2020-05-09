@@ -151,13 +151,13 @@ namespace QandA.Data
             {
                 connection.Open();
 
-                return connection.QueryFirst(
-                    @"EXEC dbo.Answer_Post 
-                        @QuestionId = @QuestionId, @Content = @Content, @UserId = @UserId,
-                        @UserName = @UserName, @Created = @Created
-                    ",
-                    answer
-                    );
+                return connection.QueryFirst<AnswerGetResponse>(
+                  @"EXEC dbo.Answer_Post 
+                    @QuestionId = @QuestionId, @Content = @Content, 
+                    @UserId = @UserId, @UserName = @UserName,
+                    @Created = @Created",
+                  answer
+                );
             }
         }
     }

@@ -110,6 +110,16 @@ BEGIN
 END 
 GO 
 
+CREATE PROC dbo.Question_GetMany
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	SELECT QuestionId, Title, Content, UserId, UserName, Created
+	FROM dbo.Question 
+END
+GO
+
 CREATE PROC dbo.Question_GetMany_BySearch
 	(@Search nvarchar(100)
 	)
