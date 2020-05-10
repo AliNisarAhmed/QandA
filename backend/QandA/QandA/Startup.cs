@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using DbUp;
 using QandA.Data;
 using AutoMapper;
+using QandA.Hubs;
 
 namespace QandA
 {
@@ -50,6 +51,8 @@ namespace QandA
 
             services.AddControllers();
 
+            services.AddSignalR();
+
             // AddScoped means only once instance of the repo is created per HTTP Request
             services.AddScoped<IDataRepository, DataRepository>();
         }
@@ -74,6 +77,7 @@ namespace QandA
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<QuestionsHub>("/questionshub");
             });
         }
     }

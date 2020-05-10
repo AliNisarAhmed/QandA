@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using QandA.Data;
 using QandA.Data.Model;
+using QandA.Hubs;
 
 namespace QandA.Controllers
 {
@@ -15,11 +17,16 @@ namespace QandA.Controllers
     {
         private readonly IDataRepository _dataRepository;
         private readonly IMapper _mapper;
+        private readonly IHubContext<QuestionsHub> _questionHubContext;
 
-        public QuestionsController(IDataRepository dataRepository, IMapper mapper)
+        public QuestionsController(
+            IDataRepository dataRepository, 
+            IMapper mapper,
+            IHubContext<QuestionsHub> questionHubContext)
         {
             _dataRepository = dataRepository;
             _mapper = mapper;
+            _questionHubContext = questionHubContext;
         }
 
         [HttpGet]
@@ -118,6 +125,13 @@ namespace QandA.Controllers
             var converted = _mapper.Map<AnswerPostFullRequest>(answerPostRequest);
 
             var savedAnswer = _dataRepository.PostAnswer(converted);
+
+            _questionHubContext.Clients.Group(
+                $"Question-{answerPostRequest.QuestionId.Value}"
+                ).SendAsync(
+                    "ReceiveQuestion",
+                    _dataRepository.GetQuestion(answerPostRequest.QuestionId.Value)
+                );
 
             return savedAnswer;
         }
