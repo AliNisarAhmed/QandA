@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using QandA.Data;
 using QandA.Data.Model;
@@ -13,10 +14,12 @@ namespace QandA.Controllers
     public class QuestionsController : ControllerBase
     {
         private readonly IDataRepository _dataRepository;
+        private readonly IMapper _mapper;
 
-        public QuestionsController(IDataRepository dataRepository)
+        public QuestionsController(IDataRepository dataRepository, IMapper mapper)
         {
             _dataRepository = dataRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -53,14 +56,10 @@ namespace QandA.Controllers
         public ActionResult<QuestionGetSingleResponse> 
             PostQuestion(QuestionPostRequest questionPostRequest)
         {
-            var savedQuestion = _dataRepository.PostQuestion(new QuestionPostFullRequest
-            {
-                Title = questionPostRequest.Title,
-                Content = questionPostRequest.Content,
-                UserId = "1",
-                UserName = "bob.test@test.com",
-                Created = DateTime.UtcNow
-            });
+            var converted = _mapper.Map<QuestionPostFullRequest>(questionPostRequest);
+
+            var savedQuestion = _dataRepository.PostQuestion(converted);
+            
             return CreatedAtAction(
                 nameof(GetQuestion),
                 new { questionId = savedQuestion.QuestionId },
@@ -116,14 +115,9 @@ namespace QandA.Controllers
             if (!questionExists)
                 return NotFound();
 
-            var savedAnswer = _dataRepository.PostAnswer(new AnswerPostFullRequest
-            {
-                QuestionId = answerPostRequest.QuestionId.Value,
-                Content = answerPostRequest.Content,
-                UserId = "1",
-                UserName = "bob.test@test.com",
-                Created = DateTime.UtcNow
-            });
+            var converted = _mapper.Map<AnswerPostFullRequest>(answerPostRequest);
+
+            var savedAnswer = _dataRepository.PostAnswer(converted);
 
             return savedAnswer;
         }

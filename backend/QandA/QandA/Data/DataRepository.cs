@@ -18,18 +18,6 @@ namespace QandA.Data
             _connectionString = config["ConnectionStrings:DefaultConnection"];
         }
 
-        public AnswerGetResponse GetAnswer(int answerId)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                return connection.QueryFirstOrDefault<AnswerGetResponse>(
-                    @"EXEC dbo.Answer_GET_ByAnswerId @AnswerId = @AnswerId",
-                    new { AnswerId = answerId }
-                    );
-            }
-        }
-
         public QuestionGetSingleResponse GetQuestion(int questionId)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -145,7 +133,21 @@ namespace QandA.Data
             }
         }
 
-        public AnswerGetResponse PostAnswer(AnswerPostRequest answer)
+        // ANSWER 
+
+        public AnswerGetResponse GetAnswer(int answerId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                return connection.QueryFirstOrDefault<AnswerGetResponse>(
+                    @"EXEC dbo.Answer_GET_ByAnswerId @AnswerId = @AnswerId",
+                    new { AnswerId = answerId }
+                    );
+            }
+        }
+
+        public AnswerGetResponse PostAnswer(AnswerPostFullRequest answer)
         {
             using (var connection = new SqlConnection(_connectionString))
             {

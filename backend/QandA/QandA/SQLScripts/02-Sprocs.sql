@@ -30,15 +30,15 @@ CREATE PROC dbo.Answer_Post
 	@QuestionId int,
 	@Content nvarchar(max),
 	@UserId nvarchar(150),
-	@Username nvarchar(150),
+	@UserName nvarchar(150),
 	@Created datetime2
 )
 AS 
 BEGIN
 	SET NOCOUNT ON 
 	INSERT INTO dbo.Answer
-		(QuestionId, Content, Userid, UserName, Created)
-	SELECT @QuestionId, @Content, @UserId, @UserId, @Created
+		(QuestionId, Content, UserId, UserName, Created)
+	SELECT @QuestionId, @Content, @UserId, @UserName, @Created
 	
 	SELECT AnswerId, Content, UserName, UserId, Created
 	FROM dbo.Answer

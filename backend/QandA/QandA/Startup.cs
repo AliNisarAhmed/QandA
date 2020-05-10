@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using DbUp;
 using QandA.Data;
+using AutoMapper;
 
 namespace QandA
 {
@@ -44,6 +45,8 @@ namespace QandA
             {
                 upgrader.PerformUpgrade();
             }
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
 
