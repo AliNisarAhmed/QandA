@@ -36,6 +36,7 @@ namespace QandA.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Question-${questionId}");
 
             await Clients.Caller.SendAsync("Message", "Successfully unsubscribed");
+
         }
     }
 }

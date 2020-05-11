@@ -10,6 +10,8 @@ namespace QandA.Data
     {
         IEnumerable<QuestionGetManyResponse> GetQuestions();
 
+        IEnumerable<QuestionGetManyResponse> GetQuestionsWithAnswers();
+
         IEnumerable<QuestionGetManyResponse> GetQuestionsBySearch(string search);
 
         IEnumerable<QuestionGetManyResponse> GetUnansweredQuestions();
@@ -18,13 +20,15 @@ namespace QandA.Data
 
         bool QuestionExists(int questionId);
 
-        AnswerGetResponse GetAnswer(int answerId);
-
         QuestionGetSingleResponse PostQuestion(QuestionPostFullRequest question);
 
         QuestionGetSingleResponse PutQuestion(int questionId, QuestionPutRequest question);
 
         void DeleteQuestion(int questionId);
+
+        // Answer API
+
+        AnswerGetResponse GetAnswer(int answerId);
 
         AnswerGetResponse PostAnswer(AnswerPostFullRequest answer);
     }

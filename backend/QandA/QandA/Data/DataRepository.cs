@@ -53,6 +53,27 @@ namespace QandA.Data
             }
         }
 
+        public IEnumerable<QuestionGetManyResponse> GetQuestionsWithAnswers()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var questions =
+                    connection.Query<QuestionGetManyResponse>(@"EXEC dbo.Question_GetMany");
+
+                foreach(var question in questions)
+                {
+                    question.Answers =
+                        connection.Query<AnswerGetResponse>(
+                            @"EXEC dbo.Answer_Get_ByQuestionId @QuestionId = @QuestionId",
+                            new { question.QuestionId }
+                            ).ToList();
+                }
+
+                return questions;
+            }
+        }
+
         public IEnumerable<QuestionGetManyResponse> GetQuestionsBySearch(string search)
         {
             using (var connection = new SqlConnection(_connectionString))
