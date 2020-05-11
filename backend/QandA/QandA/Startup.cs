@@ -47,6 +47,15 @@ namespace QandA
                 upgrader.PerformUpgrade();
             }
 
+            services.AddCors(options =>
+                options.AddPolicy("CorsPolicy", builder =>
+                    builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:3000")
+                        .AllowCredentials()
+                        ));
+
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
@@ -69,6 +78,7 @@ namespace QandA
                 app.UseHttpsRedirection();
             }
 
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
 
