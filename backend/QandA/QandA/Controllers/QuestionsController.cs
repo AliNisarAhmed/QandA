@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using QandA.Data;
@@ -86,6 +87,7 @@ namespace QandA.Controllers
             return question;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<QuestionGetSingleResponse>> 
             PostQuestion(QuestionPostRequest questionPostRequest)
@@ -101,6 +103,7 @@ namespace QandA.Controllers
                 );
         }
 
+        [Authorize(Policy = "MustBeQuestionAuthor")]
         [HttpPut("{questionId}")]
         public async Task<ActionResult<QuestionGetSingleResponse>> PutQuestion(
             int questionId, 
@@ -130,6 +133,7 @@ namespace QandA.Controllers
             return savedQuestion;
         }
 
+        [Authorize(Policy = "MustBeQuestionAuthor")]
         [HttpDelete("{questionId}")]
         public async Task<ActionResult> DeleteQuestion(int questionId)
         {
@@ -144,6 +148,7 @@ namespace QandA.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = "MustBeQuestionAuthor")]
         [HttpPost("answer")]
         public async Task<ActionResult<AnswerGetResponse>> PostAnswer(AnswerPostRequest answerPostRequest)
         {

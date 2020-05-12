@@ -14,6 +14,9 @@ using DbUp;
 using QandA.Data;
 using AutoMapper;
 using QandA.Hubs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace QandA
 {
@@ -46,6 +49,27 @@ namespace QandA
             {
                 upgrader.PerformUpgrade();
             }
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = Configuration["Auth0:Authority"];
+                options.Audience = Configuration["Auth0:Audience"];
+            });
+
+            services.AddHttpClient();
+            
+            services.AddAuthorization(options =>
+                options.AddPolicy("MustBeQuestionAuthor", policy =>
+                    policy.Requirements.Add(new MustBeQuestionAuthorRequirement())
+                    ));
+
+            services.AddScoped<IAuthorizationHandler, MustBeQuestionAuthorHandler>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddCors(options =>
                 options.AddPolicy("CorsPolicy", builder =>
@@ -84,6 +108,8 @@ namespace QandA
             app.UseCors("CorsPolicy");
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
