@@ -8,28 +8,36 @@ namespace QandA.Data
 {
     public interface IDataRepository
     {
-        IEnumerable<QuestionGetManyResponse> GetQuestions();
+        Task<IEnumerable<QuestionGetManyResponse>> GetQuestions();
 
-        IEnumerable<QuestionGetManyResponse> GetQuestionsWithAnswers();
+        Task<IEnumerable<QuestionGetManyResponse>> GetQuestionsWithAnswers();
 
-        IEnumerable<QuestionGetManyResponse> GetQuestionsBySearch(string search);
+        Task<IEnumerable<QuestionGetManyResponse>> GetQuestionsBySearch(string search);
 
-        IEnumerable<QuestionGetManyResponse> GetUnansweredQuestions();
+        Task<IEnumerable<QuestionGetManyResponse>> GetQuestionsBySearchWithPaging(
+            string search,
+            int pageNumber,
+            int pageSize
+            );
 
-        QuestionGetSingleResponse GetQuestion(int questionId);
+        Task<IEnumerable<QuestionGetManyResponse>> GetUnansweredQuestions();
 
-        bool QuestionExists(int questionId);
+        Task<IEnumerable<QuestionGetManyResponse>> GetUnansweredQuestionsAsync();
 
-        QuestionGetSingleResponse PostQuestion(QuestionPostFullRequest question);
+        Task<QuestionGetSingleResponse> GetQuestion(int questionId);
 
-        QuestionGetSingleResponse PutQuestion(int questionId, QuestionPutRequest question);
+        Task<bool> QuestionExists(int questionId);
 
-        void DeleteQuestion(int questionId);
+        Task<QuestionGetSingleResponse> PostQuestion(QuestionPostFullRequest question);
+
+        Task<QuestionGetSingleResponse> PutQuestion(int questionId, QuestionPutRequest question);
+
+        Task DeleteQuestion(int questionId);
 
         // Answer API
 
-        AnswerGetResponse GetAnswer(int answerId);
+        Task<AnswerGetResponse> GetAnswer(int answerId);
 
-        AnswerGetResponse PostAnswer(AnswerPostFullRequest answer);
+        Task<AnswerGetResponse> PostAnswer(AnswerPostFullRequest answer);
     }
 }

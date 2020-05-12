@@ -62,6 +62,9 @@ namespace QandA
 
             services.AddSignalR();
 
+            services.AddMemoryCache();
+            services.AddSingleton<IQuestionCache, QuestionCache>();
+
             // AddScoped means only once instance of the repo is created per HTTP Request
             services.AddScoped<IDataRepository, DataRepository>();
         }

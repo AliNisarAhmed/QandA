@@ -70,7 +70,7 @@ AS
 BEGIN
 	DECLARE @i int = 1
 
-	WHILE @i < 1000
+	WHILE @i < 10000
 	BEGIN 
 		INSERT INTO dbo.Question
 			(Title, Content, UserId, UserName, Created)

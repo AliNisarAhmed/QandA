@@ -18,65 +18,81 @@ namespace QandA.Controllers
         private readonly IDataRepository _dataRepository;
         private readonly IMapper _mapper;
         private readonly IHubContext<QuestionsHub> _questionHubContext;
+        private readonly IQuestionCache _cache;
 
         public QuestionsController(
             IDataRepository dataRepository, 
             IMapper mapper,
-            IHubContext<QuestionsHub> questionHubContext)
+            IHubContext<QuestionsHub> questionHubContext,
+            IQuestionCache questionCache
+            )
         {
             _dataRepository = dataRepository;
             _mapper = mapper;
             _questionHubContext = questionHubContext;
+            _cache = questionCache;
         }
 
         [HttpGet]
-        public IEnumerable<QuestionGetManyResponse> GetQuestions(
+        public async Task<IEnumerable<QuestionGetManyResponse>> GetQuestions(
             string search,
-            bool includeAnswers
+            bool includeAnswers,
+            int page = 1,
+            int pageSize = 20
             )
         {
             if (string.IsNullOrEmpty(search))
             {
                 if (includeAnswers)
                 {
-                    return _dataRepository.GetQuestionsWithAnswers();
+                    return await _dataRepository.GetQuestionsWithAnswers();
                 }
                 else
                 {
                     var questions = _dataRepository.GetQuestions();
-                    return questions;
+                    return await questions;
 
                 }
             } 
             else
             {
-                return _dataRepository.GetQuestionsBySearch(search);
+                return await _dataRepository.GetQuestionsBySearchWithPaging(
+                    search, 
+                    page,
+                    pageSize
+                    );
             }
         }
 
         [HttpGet("unanswered")]
-        public IEnumerable<QuestionGetManyResponse> GetUnansweredQuestions()
+        public async Task<IEnumerable<QuestionGetManyResponse>> GetUnansweredQuestions()
         {
-            return _dataRepository.GetUnansweredQuestions();
+            return await _dataRepository.GetUnansweredQuestionsAsync();
         }
 
         [HttpGet("{questionId}")]
-        public ActionResult<QuestionGetSingleResponse> GetQuestion(int questionId)
+        public async Task<ActionResult<QuestionGetSingleResponse>> GetQuestion(int questionId)
         {
-            var question = _dataRepository.GetQuestion(questionId);
+            var question = _cache.Get(questionId);
             if (question == null)
-                return NotFound();
+            {
+                question = await _dataRepository.GetQuestion(questionId);
+                if (question == null)
+                    return NotFound();
+
+                _cache.Set(question);
+            }
 
             return question;
         }
 
         [HttpPost]
-        public ActionResult<QuestionGetSingleResponse> 
+        public async Task<ActionResult<QuestionGetSingleResponse>> 
             PostQuestion(QuestionPostRequest questionPostRequest)
         {
             var converted = _mapper.Map<QuestionPostFullRequest>(questionPostRequest);
 
-            var savedQuestion = _dataRepository.PostQuestion(converted);
+            var savedQuestion = await _dataRepository.PostQuestion(converted);
             
             return CreatedAtAction(
                 nameof(GetQuestion),
@@ -86,11 +102,11 @@ namespace QandA.Controllers
         }
 
         [HttpPut("{questionId}")]
-        public ActionResult<QuestionGetSingleResponse> PutQuestion(
+        public async Task<ActionResult<QuestionGetSingleResponse>> PutQuestion(
             int questionId, 
             QuestionPutRequest questionPutRequest)
         {
-            var question = _dataRepository.GetQuestion(questionId);
+            var question = await _dataRepository.GetQuestion(questionId);
 
             if (question == null)
                 return NotFound();
@@ -105,39 +121,45 @@ namespace QandA.Controllers
                     questionPutRequest.Content;
 
             var savedQuestion =
-                _dataRepository.PutQuestion(
+                await _dataRepository.PutQuestion(
                     questionId,
                     questionPutRequest);
+
+            _cache.Remove(savedQuestion.QuestionId);
 
             return savedQuestion;
         }
 
         [HttpDelete("{questionId}")]
-        public ActionResult DeleteQuestion(int questionId)
+        public async Task<ActionResult> DeleteQuestion(int questionId)
         {
-            var question = _dataRepository.GetQuestion(questionId);
+            var question = await _dataRepository.GetQuestion(questionId);
             if (question == null)
                 return NotFound();
 
-            _dataRepository.DeleteQuestion(questionId);
+            await _dataRepository.DeleteQuestion(questionId);
+
+            _cache.Remove(questionId);
             
             return NoContent();
         }
 
         [HttpPost("answer")]
-        public ActionResult<AnswerGetResponse> PostAnswer(AnswerPostRequest answerPostRequest)
+        public async Task<ActionResult<AnswerGetResponse>> PostAnswer(AnswerPostRequest answerPostRequest)
         {
             var questionExists =
-                _dataRepository.QuestionExists(answerPostRequest.QuestionId.Value);
+                await _dataRepository.QuestionExists(answerPostRequest.QuestionId.Value);
 
             if (!questionExists)
                 return NotFound();
 
             var converted = _mapper.Map<AnswerPostFullRequest>(answerPostRequest);
 
-            var savedAnswer = _dataRepository.PostAnswer(converted);
+            var savedAnswer = await _dataRepository.PostAnswer(converted);
 
-            _questionHubContext.Clients.Group(
+            _cache.Remove(answerPostRequest.QuestionId.Value);
+
+            await _questionHubContext.Clients.Group(
                 $"Question-{answerPostRequest.QuestionId.Value}"
                 ).SendAsync(
                     "ReceiveQuestion",
