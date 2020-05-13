@@ -17,6 +17,7 @@ using QandA.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using QandA.Authorization;
 
 namespace QandA
 {

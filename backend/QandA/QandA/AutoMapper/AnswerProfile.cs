@@ -12,8 +12,8 @@ namespace QandA.AutoMapper
         public AnswerProfile()
         {
             CreateMap<AnswerPostRequest, AnswerPostFullRequest>()
-                .ForMember(p => p.UserId, opt => opt.MapFrom(src => "2"))
-                .ForMember(p => p.UserName, opt => opt.MapFrom(src => "ali.test@test.com"))
+                .ForMember(p => p.UserId, opt => opt.MapFrom((src, dest, destMem, context) => context.Items["UserId"]))
+                .ForMember(p => p.UserName, opt => opt.MapFrom((src, dest, destMem, context) => context.Items["UserName"]))
                 .ForMember(p => p.Created, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }

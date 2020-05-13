@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.SignalR;
 using QandA.Data;
 using QandA.Data.Model;
 using QandA.Hubs;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace QandA.Controllers
 {
@@ -20,18 +24,24 @@ namespace QandA.Controllers
         private readonly IMapper _mapper;
         private readonly IHubContext<QuestionsHub> _questionHubContext;
         private readonly IQuestionCache _cache;
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly string _auth0UserInfo;
 
         public QuestionsController(
             IDataRepository dataRepository, 
             IMapper mapper,
             IHubContext<QuestionsHub> questionHubContext,
-            IQuestionCache questionCache
+            IQuestionCache questionCache,
+            IHttpClientFactory clientFactory,
+            IConfiguration configuration
             )
         {
             _dataRepository = dataRepository;
             _mapper = mapper;
             _questionHubContext = questionHubContext;
             _cache = questionCache;
+            _clientFactory = clientFactory;
+            _auth0UserInfo = $"{configuration["Auth0:Authority"]}userinfo";
         }
 
         [HttpGet]
@@ -92,7 +102,14 @@ namespace QandA.Controllers
         public async Task<ActionResult<QuestionGetSingleResponse>> 
             PostQuestion(QuestionPostRequest questionPostRequest)
         {
-            var converted = _mapper.Map<QuestionPostFullRequest>(questionPostRequest);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userName = await GetUserName();
+
+            var converted = _mapper.Map<QuestionPostFullRequest>(questionPostRequest, opt => 
+            {
+                opt.Items["UserId"] = userId;
+                opt.Items["UserName"] = userName;
+            });
 
             var savedQuestion = await _dataRepository.PostQuestion(converted);
             
@@ -158,7 +175,14 @@ namespace QandA.Controllers
             if (!questionExists)
                 return NotFound();
 
-            var converted = _mapper.Map<AnswerPostFullRequest>(answerPostRequest);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userName = await GetUserName();
+
+            var converted = _mapper.Map<AnswerPostFullRequest>(answerPostRequest, opt =>
+            {
+                opt.Items["UserId"] = userId;
+                opt.Items["UserName"] = userName;
+            });
 
             var savedAnswer = await _dataRepository.PostAnswer(converted);
 
@@ -172,6 +196,41 @@ namespace QandA.Controllers
                 );
 
             return savedAnswer;
+        }
+
+        private async Task<string> GetUserName()
+        {
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                _auth0UserInfo
+                );
+
+            request.Headers.Add("Authorization", Request.Headers["Authorization"].First());
+
+            var client = _clientFactory.CreateClient();
+
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonContent =
+                    await response.Content.ReadAsStringAsync();
+
+                var user =
+                    JsonSerializer.Deserialize<User>(
+                        jsonContent,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }
+                        );
+
+                return user.Name;
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }

@@ -12,8 +12,8 @@ namespace QandA.AutoMapper
         public QuestionProfile()
         {
             CreateMap<QuestionPostRequest, QuestionPostFullRequest>()
-                .ForMember(p => p.UserId, opt => opt.MapFrom(src => "1"))
-                .ForMember(p => p.UserName, opt => opt.MapFrom(src => "bob.test@test.com"))
+                .ForMember(p => p.UserId, opt => opt.MapFrom((src, dest, destMem, context) => context.Items["UserId"]))
+                .ForMember(p => p.UserName, opt => opt.MapFrom((src, dest, destMem, context) => context.Items["UserName"]))
                 .ForMember(p => p.Created, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             CreateMap<QuestionPostFullRequest, QuestionPostRequest>();
