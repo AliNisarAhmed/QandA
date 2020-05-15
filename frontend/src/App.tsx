@@ -6,24 +6,17 @@ import { Provider } from 'react-redux';
 
 import { configureStore } from './Store';
 
-import { HeaderWithRouter as Header } from './Header';
-
-import HomePage from './HomePage';
-
 import { css, jsx } from '@emotion/core';
-
 import { fontFamily, fontSize, gray2 } from './Styles';
 
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 
+import { HeaderWithRouter as Header } from './Header';
+import HomePage from './HomePage';
 import { SearchPage } from './SearchPage';
-
 import { SignInPage } from './SignInPage';
-
 import { NotFoundPage } from './NotFoundPage';
-
 import { QuestionPage } from './QuestionPage';
-
 import { SignOutPage } from './SignOutPage';
 import { AuthProvider } from './Auth';
 

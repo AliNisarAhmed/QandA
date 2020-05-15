@@ -29,8 +29,6 @@ export const Auth0Context = createContext<IAuth0Context>({
   loading: true,
 });
 
-export const useAuth = () => useContext(Auth0Context);
-
 export const AuthProvider: FC = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<Auth0User | undefined>(undefined);
@@ -44,6 +42,7 @@ export const AuthProvider: FC = ({ children }) => {
     async function initAuth0() {
       setLoading(true);
       const auth0FromHook = await createAuth0Client(authSettings);
+      console.log('auth0FromHook', auth0FromHook);
       setAuth0Client(auth0FromHook);
 
       if (
@@ -69,17 +68,28 @@ export const AuthProvider: FC = ({ children }) => {
     isAuthenticated,
     user,
     loading,
-    signin: () => getAuth0ClientFromState().loginWithRedirect(),
-    signout: () =>
-      getAuth0ClientFromState().logout({
-        client_id: authSettings.client_id,
-        returnTo: window.location.origin + '/signout-callback',
-      }),
+    signin,
+    signout,
   };
 
   return (
     <Auth0Context.Provider value={value}>{children}</Auth0Context.Provider>
   );
+
+  function signin() {
+    if (auth0Client) {
+      auth0Client.loginWithRedirect();
+    }
+  }
+
+  function signout() {
+    if (auth0Client) {
+      auth0Client.logout({
+        client_id: authSettings.client_id,
+        returnTo: window.location.origin + '/signout-callback',
+      });
+    }
+  }
 
   async function getAccessToken() {
     const auth0FromHook = await createAuth0Client(authSettings);
