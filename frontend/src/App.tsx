@@ -26,8 +26,8 @@ const App: React.FC = () => {
   const store = configureStore();
 
   return (
-    <Provider store={store}>
-      <AuthProvider>
+    <AuthProvider>
+      <Provider store={store}>
         <BrowserRouter>
           <div
             css={css`
@@ -67,16 +67,18 @@ const App: React.FC = () => {
 
               <Route
                 path="/signin"
-                render={() => <SignInPage action="signin" />}
+                render={(props) => <SignInPage action="signin" {...props} />}
               />
 
               <Route
                 path="/signin-callback"
-                render={() => <SignInPage action="signin-callback" />}
+                render={(props) => (
+                  <SignInPage action="signin-callback" {...props} />
+                )}
               />
 
               <Route
-                path="signout"
+                path="/signout"
                 render={() => <SignOutPage action="signout" />}
               />
 
@@ -91,8 +93,8 @@ const App: React.FC = () => {
             </Switch>
           </div>
         </BrowserRouter>
-      </AuthProvider>
-    </Provider>
+      </Provider>
+    </AuthProvider>
   );
 };
 

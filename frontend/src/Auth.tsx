@@ -1,9 +1,9 @@
 import React, {
   createContext,
-  useContext,
   FC,
   useState,
   useEffect,
+  useContext,
 } from 'react';
 import createAuth0Client from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
@@ -29,6 +29,15 @@ export const Auth0Context = createContext<IAuth0Context>({
   loading: true,
 });
 
+export const useAuth = () => useContext(Auth0Context);
+
+const onRedirectCallback = (appState: any) =>
+  window.history.replaceState(
+    appState,
+    document.title,
+    window.location.pathname,
+  );
+
 export const AuthProvider: FC = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<Auth0User | undefined>(undefined);
@@ -42,15 +51,16 @@ export const AuthProvider: FC = ({ children }) => {
     async function initAuth0() {
       setLoading(true);
       const auth0FromHook = await createAuth0Client(authSettings);
-      console.log('auth0FromHook', auth0FromHook);
       setAuth0Client(auth0FromHook);
 
       if (
         window.location.pathname === '/signin-callback' &&
         window.location.search.indexOf('code=') > -1
       ) {
-        await auth0FromHook.handleRedirectCallback();
-        window.location.replace(window.location.origin);
+        const { appState } = await auth0FromHook.handleRedirectCallback();
+        console.log('appState', appState);
+        // window.location.replace(window.location.origin);
+        onRedirectCallback(appState);
       }
 
       const isAuthenticatedFromHook = await auth0FromHook.isAuthenticated();
@@ -58,7 +68,6 @@ export const AuthProvider: FC = ({ children }) => {
         const user = await auth0FromHook.getUser();
         setUser(user);
       }
-
       setIsAuthenticated(isAuthenticatedFromHook);
       setLoading(false);
     }
@@ -76,9 +85,9 @@ export const AuthProvider: FC = ({ children }) => {
     <Auth0Context.Provider value={value}>{children}</Auth0Context.Provider>
   );
 
-  function signin() {
+  async function signin() {
     if (auth0Client) {
-      auth0Client.loginWithRedirect();
+      await auth0Client.loginWithRedirect();
     }
   }
 
