@@ -19,6 +19,7 @@ import { NotFoundPage } from './NotFoundPage';
 import { QuestionPage } from './QuestionPage';
 import { SignOutPage } from './SignOutPage';
 import { AuthProvider } from './Auth';
+import { AuthorizedPage } from './AuthorizedPage';
 
 const AskPage = lazy(() => import('./AskPage'));
 
@@ -53,7 +54,6 @@ const App: React.FC = () => {
                     <div
                       css={css`
                         margin-top: 100px;
-
                         text-align: center;
                       `}
                     >
@@ -61,7 +61,9 @@ const App: React.FC = () => {
                     </div>
                   }
                 >
-                  <AskPage />
+                  <AuthorizedPage>
+                    <AskPage />
+                  </AuthorizedPage>
                 </Suspense>
               </Route>
 

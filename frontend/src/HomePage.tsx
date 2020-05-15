@@ -15,6 +15,7 @@ import { QuestionData } from './QuestionsData';
 import { Page } from './Page';
 import { PageTitle } from './PageTitle';
 import { RouteComponentProps } from 'react-router-dom';
+import { useAuth } from './Auth';
 
 interface IProps extends RouteComponentProps {
   getUnansweredQuestions: () => Promise<void>;
@@ -28,6 +29,8 @@ const HomePage: FC<IProps> = ({
   questionsLoading,
   getUnansweredQuestions,
 }) => {
+  const { isAuthenticated } = useAuth();
+
   useEffect(() => {
     if (questions === null) {
       getUnansweredQuestions();
@@ -48,9 +51,11 @@ const HomePage: FC<IProps> = ({
         `}
       >
         <PageTitle>Unanswered Questions</PageTitle>
-        <PrimaryButton onClick={handleAskQuestionClick}>
-          Ask a question
-        </PrimaryButton>
+        {isAuthenticated && (
+          <PrimaryButton onClick={handleAskQuestionClick}>
+            Ask a question
+          </PrimaryButton>
+        )}
       </div>
       {questionsLoading ? (
         <div
