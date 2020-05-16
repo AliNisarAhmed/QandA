@@ -41,8 +41,6 @@ export const Header: FC<RouteComponentProps> = ({ history, location }) => {
 
   const { isAuthenticated, user, loading } = useAuth();
 
-  console.log('user in header', user);
-
   return (
     <div
       css={css`

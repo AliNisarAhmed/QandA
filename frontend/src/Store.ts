@@ -15,6 +15,8 @@ import {
   applyMiddleware,
 } from 'redux';
 import thunk, { ThunkAction } from 'redux-thunk';
+import { connectRouter, routerMiddleware, push } from 'connected-react-router';
+import { createBrowserHistory } from 'history';
 
 interface QuestionState {
   readonly loading: boolean;
@@ -83,12 +85,14 @@ export const postQuestionActionCreator: ActionCreator<ThunkAction<
 >> = (question: PostQuestionData) => {
   return async (dispatch: Dispatch) => {
     const result = await postQuestion(question);
+    console.log('result: ', result);
     const postedQuestionAction: PostedQuestionAction = {
       type: 'PostedQuestion',
       result,
     };
 
     dispatch(postedQuestionAction);
+    dispatch(push('/'));
   };
 };
 
@@ -140,7 +144,22 @@ const rootReducer = combineReducers<AppState>({
   questions: questionsReducer,
 });
 
-export function configureStore(): Store<AppState> {
-  const store = createStore(rootReducer, undefined, applyMiddleware(thunk));
+export const createRootReducer = (history: any) => combineReducers({
+  router: connectRouter(history),
+  questions: questionsReducer
+});
+
+export const history = createBrowserHistory();
+
+
+export function configureStore(preloadedState?: AppState): Store<AppState> {
+  const store = createStore(
+    createRootReducer(history),
+    preloadedState,
+    applyMiddleware(
+      routerMiddleware(history),
+      thunk
+    )
+  );
   return store;
 }

@@ -35,6 +35,8 @@ export const QuestionPage: FC<IProps> = ({ match }) => {
   const { isAuthenticated } = useAuth();
 
   const setUpSignalRConnection = async (questionId: number) => {
+    Object.defineProperty(WebSocket, 'OPEN', { value: 1 });
+
     const connection = new HubConnectionBuilder()
       .withUrl('http://localhost:53662/questionshub')
       .withAutomaticReconnect()
@@ -85,22 +87,25 @@ export const QuestionPage: FC<IProps> = ({ match }) => {
   };
 
   useEffect(() => {
+    let connection: HubConnection;
     let cancelled = false;
-    const doGetQuestion = async (questionId: number) => {
+
+    init();
+
+    async function init() {
+      if (match.params.questionId) {
+        const questionId = Number(match.params.questionId);
+        await doGetQuestion(questionId);
+        const conn = await setUpSignalRConnection(questionId);
+        connection = conn;
+      }
+    }
+
+    async function doGetQuestion(questionId: number) {
       const foundQuestion = await getQuestion(questionId);
       if (!cancelled) {
         setQuestion(foundQuestion);
       }
-    };
-
-    let connection: HubConnection;
-
-    if (match.params.questionId) {
-      const questionId = Number(match.params.questionId);
-      doGetQuestion(questionId);
-      setUpSignalRConnection(questionId).then((con) => {
-        connection = con;
-      });
     }
 
     return function cleanUp() {
@@ -119,10 +124,10 @@ export const QuestionPage: FC<IProps> = ({ match }) => {
       userName: 'Fred',
       created: new Date(),
     });
+
     return { success: result ? true : false };
   };
 
-  console.log('question :>> ', question);
   return (
     <Page>
       <div

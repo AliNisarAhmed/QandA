@@ -4,7 +4,7 @@ import React, { lazy, Suspense } from 'react';
 
 import { Provider } from 'react-redux';
 
-import { configureStore } from './Store';
+import { configureStore, history } from './Store';
 
 import { css, jsx } from '@emotion/core';
 import { fontFamily, fontSize, gray2 } from './Styles';
@@ -20,6 +20,7 @@ import { QuestionPage } from './QuestionPage';
 import { SignOutPage } from './SignOutPage';
 import { AuthProvider } from './Auth';
 import { AuthorizedPage } from './AuthorizedPage';
+import { ConnectedRouter } from 'connected-react-router';
 
 const AskPage = lazy(() => import('./AskPage'));
 
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Provider store={store}>
-        <BrowserRouter>
+        <ConnectedRouter history={history}>
           <div
             css={css`
               font-family: ${fontFamily};
@@ -94,7 +95,7 @@ const App: React.FC = () => {
               <Route component={NotFoundPage} />
             </Switch>
           </div>
-        </BrowserRouter>
+        </ConnectedRouter>
       </Provider>
     </AuthProvider>
   );

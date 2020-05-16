@@ -205,6 +205,7 @@ export const Form: FC<IProps> = ({
       setSubmitError(!result.success);
       setSubmitting(false);
       setSubmitted(true);
+      setValues({});
     }
   }
 

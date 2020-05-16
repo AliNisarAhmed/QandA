@@ -108,6 +108,7 @@ export const postQuestion = async (
   question: PostQuestionData,
 ): Promise<QuestionData | undefined> => {
   const accessToken = await getAccessToken();
+  console.log('accessToken', accessToken)
   try {
     const result = await http<PostQuestionData, QuestionDataFromServer>({
       path: '/questions',

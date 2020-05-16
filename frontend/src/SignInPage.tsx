@@ -23,7 +23,7 @@ export const SignInPage: FC<IProps> = ({ action, history }) => {
     if (isAuthenticated) {
       history.push('/');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, history]);
 
   return (
     <Page title="Sign In">
