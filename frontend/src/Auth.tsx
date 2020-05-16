@@ -99,17 +99,10 @@ export const AuthProvider: FC = ({ children }) => {
       });
     }
   }
+};
 
-  async function getAccessToken() {
-    const auth0FromHook = await createAuth0Client(authSettings);
-    const accessToken = await auth0FromHook.getTokenSilently();
-    return accessToken;
-  }
-
-  function getAuth0ClientFromState() {
-    if (auth0Client === undefined) {
-      throw new Error('Auth0 client not set');
-    }
-    return auth0Client;
-  }
+export const getAccessToken = async () => {
+  const auth0FromHook = await createAuth0Client(authSettings);
+  const accessToken = await auth0FromHook.getTokenSilently();
+  return accessToken;
 };

@@ -32,9 +32,14 @@ const HomePage: FC<IProps> = ({
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (questions === null) {
+    let cancelled = false;
+    if (questions === null && !cancelled) {
       getUnansweredQuestions();
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [questions, getUnansweredQuestions]);
 
   const handleAskQuestionClick = () => {
