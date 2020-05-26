@@ -1,4 +1,9 @@
-export const WebAPIUrl = 'http://localhost:53662/api';
+export const WebAPIUrl =
+  process.env.REACT_APP_ENV === 'production'
+    ? 'https://qandareact.azurewebsites.net/api'
+    : process.env.REACT_APP_ENV === 'staging'
+      ? 'https://qandareact-staging.azirewebsites.net/api'
+      : 'http://localhost:53662/api';
 
 export const authSettings = {
   domain: 'qandareact.auth0.com',

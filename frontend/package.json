@@ -27,6 +27,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:production": "npx cross-env REACT_APP_ENV=production yarn build",
+    "build:staging": "npx cross-env REACT_APP_ENV=staging yarn build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
