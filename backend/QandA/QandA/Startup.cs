@@ -77,8 +77,8 @@ namespace QandA
                     builder
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .WithOrigins("http://localhost:3000")
                         .AllowCredentials()
+                        .WithOrigins(Configuration["Frontend"])
                         ));
 
             services.AddAutoMapper(typeof(Startup));
