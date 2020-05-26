@@ -78,7 +78,7 @@ steps:
 
 - script: yarn run build:production
   workingDirectory: frontend
-  dispayName: 'frontend production build'
+  displayName: 'frontend production build'
 
 - task: ArchiveFiles@2
   inputs: 
