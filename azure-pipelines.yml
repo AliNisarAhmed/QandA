@@ -14,7 +14,7 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: backend
+  workingDirectory: backend/
   displayName: 'backend build'
 
 - script: dotnet test
