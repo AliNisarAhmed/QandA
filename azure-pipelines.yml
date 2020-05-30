@@ -23,9 +23,9 @@ steps:
   workingDirectory: backend/QandA/QandA
   displayName: 'backend build'
 
-- script: dotnet test
-  workingDirectory: backend/QandA/BackEndTests
-  displayName: 'backend tests'
+# - script: dotnet test
+#   workingDirectory: backend/QandA/BackEndTests
+#   displayName: 'backend tests'
 
 - script: dotnet publish --configuration $(buildConfiguration)
   workingDirectory: backend/QandA/QandA
