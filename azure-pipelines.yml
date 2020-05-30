@@ -13,9 +13,14 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: backend/
-  displayName: 'backend build'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: build
+    configuration: $(buildConfiguration)
+
+# - script: dotnet build --configuration $(buildConfiguration)
+#   workingDirectory: backend/
+#   displayName: 'backend build'
 
 - script: dotnet test
   workingDirectory: backend
