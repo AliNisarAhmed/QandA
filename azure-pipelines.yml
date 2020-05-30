@@ -50,9 +50,9 @@ steps:
   workingDirectory: frontend
   displayName: 'frontend install dependencies'
 
-- script: yarn run test:ci
-  workingDirectory: frontend
-  displayName: 'frontend tests'
+# - script: yarn run test:ci
+#   workingDirectory: frontend
+#   displayName: 'frontend tests'
 
 - script: yarn run build:staging
   workingDirectory: frontend
