@@ -13,35 +13,36 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: build
-    configuration: $(buildConfiguration)
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: build
+#     configuration: $(buildConfiguration)
+#     projects: 
 
-# - script: dotnet build --configuration $(buildConfiguration)
-#   workingDirectory: backend/
-#   displayName: 'backend build'
+- script: dotnet build --configuration $(buildConfiguration)
+  workingDirectory: backend/QandA
+  displayName: 'backend build'
 
 - script: dotnet test
   workingDirectory: backend
   displayName: 'backend tests'
 
 - script: dotnet publish --configuration $(buildConfiguration)
-  workingDirectory: backend
+  workingDirectory: backend/QandA
   displayName: 'backend publish'
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: 'backend/bin/Release/netcoreapp3.0/publish'
+    rootFolderOrFile: 'backend/QandA.bin/Release/netcoreapp3.0/publish'
     includeRootFolder: false
     archiveType: zip
-    archiveFile: '$(Build.ArtifactStagingDirectory)/backend/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/backend/QandA/$(Build.BuildId).zip'
     replaceExistingArchive: true
   displayName: 'backend zip files'  
 
 - task: PublishBuildArtifacts@1
   inputs: 
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/backend'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/backend/QandA'
     artifactName: 'backend'
   displayName: 'backend publish to pipeline'
 
