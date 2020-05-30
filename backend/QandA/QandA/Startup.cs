@@ -62,7 +62,7 @@ namespace QandA
             });
 
             services.AddHttpClient();
-            
+
             services.AddAuthorization(options =>
                 options.AddPolicy("MustBeQuestionAuthor", policy =>
                     policy.Requirements.Add(new MustBeQuestionAuthorRequirement())
@@ -100,7 +100,7 @@ namespace QandA
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            } 
+            }
             else
             {
                 app.UseHttpsRedirection();

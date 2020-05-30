@@ -8,7 +8,7 @@
     "@emotion/styled": "^10.0.27",
     "@microsoft/signalr": "^3.1.3",
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
+    "@testing-library/react": "^10.0.4",
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
@@ -30,7 +30,9 @@
     "build:production": "npx cross-env REACT_APP_ENV=production yarn build",
     "build:staging": "npx cross-env REACT_APP_ENV=staging yarn build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test:ci": "npx cross-env CI=true react-scripts test",
+    "eject": "react-scripts eject",
+    "cy:open": "cypress open"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,8 +50,10 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/cypress": "^6.0.0",
     "@types/react-redux": "^7.1.8",
     "@types/react-router-dom": "^5.1.5",
+    "cypress": "^4.7.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
     "prettier": "^2.0.5"
