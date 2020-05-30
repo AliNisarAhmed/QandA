@@ -20,20 +20,20 @@ steps:
 #     projects: 
 
 - script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: backend/QandA
+  workingDirectory: backend/QandA/QandA
   displayName: 'backend build'
 
 - script: dotnet test
-  workingDirectory: backend
+  workingDirectory: backend/QandA/BackEndTests
   displayName: 'backend tests'
 
 - script: dotnet publish --configuration $(buildConfiguration)
-  workingDirectory: backend/QandA
+  workingDirectory: backend/QandA/QandA
   displayName: 'backend publish'
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: 'backend/QandA.bin/Release/netcoreapp3.0/publish'
+    rootFolderOrFile: 'backend/QandA/QandA/bin/Release/netcoreapp3.1/publish'
     includeRootFolder: false
     archiveType: zip
     archiveFile: '$(Build.ArtifactStagingDirectory)/backend/QandA/$(Build.BuildId).zip'
