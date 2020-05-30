@@ -36,13 +36,13 @@ steps:
     rootFolderOrFile: 'backend/QandA/QandA/bin/Release/netcoreapp3.1/publish'
     includeRootFolder: false
     archiveType: zip
-    archiveFile: '$(Build.ArtifactStagingDirectory)/backend/QandA/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/backend/QandA/QandA/$(Build.BuildId).zip'
     replaceExistingArchive: true
   displayName: 'backend zip files'  
 
 - task: PublishBuildArtifacts@1
   inputs: 
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/backend/QandA'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/backend/QandA/QandA'
     artifactName: 'backend'
   displayName: 'backend publish to pipeline'
 
